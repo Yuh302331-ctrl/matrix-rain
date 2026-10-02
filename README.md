@@ -41,6 +41,17 @@ powershell -ExecutionPolicy Bypass -File matrix_rain.ps1 -Seconds 30
 脚本通过 `SetConsoleMode` 开启 VT 转义支持，因此在旧版控制台里也能显示颜色。
 建议把终端窗口最大化后运行，效果最佳。
 
+## 下载
+
+无需克隆仓库，直接下载打包文件：
+
+1. 前往 [Releases 最新版](https://github.com/Yuh302331-ctrl/matrix-rain/releases/latest) 下载 `matrix-rain-v1.0.0.zip`
+2. 解压得到 `matrix_rain.ps1`，按上面的「用法」运行
+
+> English: zero-dependency terminal animation in pure PowerShell. Grab the zip from the
+> [latest release](https://github.com/Yuh302331-ctrl/matrix-rain/releases/latest), extract, and run.
+
+
 ## License
 
 MIT
