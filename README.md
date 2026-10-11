@@ -55,3 +55,7 @@ powershell -ExecutionPolicy Bypass -File matrix_rain.ps1 -Seconds 30
 ## License
 
 MIT
+
+## 作者
+
+👤 [Yuh302331-ctrl](https://github.com/Yuh302331-ctrl) · 🏠 [个人主页](https://yuh302331-ctrl.github.io)
