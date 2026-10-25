@@ -10,18 +10,30 @@ param(
 #   powershell -ExecutionPolicy Bypass -File matrix_rain.ps1 -Seconds 10
 # Press Ctrl+C to stop.
 
-$ErrorActionPreference = 'SilentlyContinue'
+$ErrorActionPreference = 'Stop'
 
 $signature = '[DllImport("kernel32.dll")] public static extern IntPtr GetStdHandle(int n);
 [DllImport("kernel32.dll")] public static extern bool GetConsoleMode(IntPtr h, out uint m);
 [DllImport("kernel32.dll")] public static extern bool SetConsoleMode(IntPtr h, uint m);'
 
-$vt = Add-Type -MemberDefinition $signature -Name 'Vt' -Namespace 'Win32' -PassThru
-if ($vt) {
-    $handle = $vt::GetStdHandle(-11)
-    $mode = 0
-    [void]$vt::GetConsoleMode($handle, [ref]$mode)
-    [void]$vt::SetConsoleMode($handle, $mode -bor 4)
+$vt = $null
+$handle = [IntPtr]::Zero
+$originalMode = $null
+try {
+    $vt = Add-Type -MemberDefinition $signature -Name 'Vt' -Namespace 'Win32' -PassThru
+    if ($vt) {
+        $handle = $vt::GetStdHandle(-11)
+        $mode = 0
+        if ($vt::GetConsoleMode($handle, [ref]$mode)) {
+            $originalMode = $mode
+            if (-not $vt::SetConsoleMode($handle, $mode -bor 4)) {
+                Write-Warning 'Could not enable virtual-terminal processing.'
+            }
+        }
+    }
+}
+catch {
+    Write-Warning "Could not initialize the Windows console API: $($_.Exception.Message)"
 }
 
 try {
@@ -48,7 +60,7 @@ $sb = New-Object System.Text.StringBuilder
 $delayMs = 35
 $frame = 0
 
-[Console]::Out.Write("$ESC[2J$ESC[H$ESC[?25l")
+[Console]::Out.Write("$ESC[?1049h$ESC[H$ESC[2J$ESC[?25l")
 
 $sw = [System.Diagnostics.Stopwatch]::StartNew()
 try {
@@ -99,6 +111,9 @@ try {
     }
 }
 finally {
-    [Console]::Out.Write("$ESC[0m$ESC[?25h$ESC[H$ESC[2J")
+    [Console]::Out.Write("$ESC[0m$ESC[?25h$ESC[?1049l")
     [Console]::Out.Flush()
+    if ($vt -and $handle -ne [IntPtr]::Zero -and $null -ne $originalMode) {
+        [void]$vt::SetConsoleMode($handle, $originalMode)
+    }
 }
