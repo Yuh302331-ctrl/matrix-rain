@@ -6,7 +6,7 @@ Windows PowerShell 终端绿色字符雨动画，纯原生实现，不依赖任�
 
 - 绿色字符雨 + 高亮雨头 + 渐暗拖尾
 - 自动适配终端窗口大小
-- 退出时自动恢复光标、清屏
+- 使用独立终端缓冲区，退出后自动恢复光标和原终端画面
 - 平均 25 FPS 左右
 
 ## 用法
@@ -38,7 +38,7 @@ powershell -ExecutionPolicy Bypass -File matrix_rain.ps1 -Seconds 30
 
 ## 说明
 
-脚本通过 `SetConsoleMode` 开启 VT 转义支持，因此在旧版控制台里也能显示颜色。
+脚本通过 `SetConsoleMode` 开启 VT 转义支持，并在退出时恢复原始控制台模式。
 建议把终端窗口最大化后运行，效果最佳。
 
 ## 下载
